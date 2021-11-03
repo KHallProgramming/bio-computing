@@ -38,7 +38,7 @@ df = df.drop_duplicates()
 df = df.fillna('no data provided')
 df = df.drop_duplicates(subset='title', keep="first")
 # Date filter
-### df=df[df['publish_time'].str.contains('2020')]
+### df = df[df['publish_time'].str.contains('2020')]
 # Convert abstracts to lowercase
 df["abstract"] = df["abstract"].str.lower()+df["title"].str.lower()
 # Show 5 lines of the new dataframe
@@ -56,14 +56,14 @@ def stem_words(words):
         singles.append(stemmer.stem(w))
     return singles
 
-def search_dataframe(df,search_words):
+def search_dataframe(df, search_words):
     search_words = stem_words(search_words)
     df1 = df[functools.reduce(lambda a, b: a&b, (df['abstract'].str.contains(s) 
                                                for s in search_words))]
     return df1
 
 # Analyze search results for relevance with word count / abstract length
-def search_relevance(rel_df,search_words):
+def search_relevance(rel_df, search_words):
     rel_df['score']=""
     search_words = stem_words(search_words)
     for index, row in rel_df.iterrows():
@@ -80,7 +80,7 @@ def search_relevance(rel_df,search_words):
     return rel_df
 
 # Function to get best sentences from the search results
-def get_sentences(df1,search_words):
+def get_sentences(df1, search_words):
     df_table = pd.DataFrame(columns = ["pub_date", "authors", "title", 
                                        "excerpt", "rel_score"])
     search_words = stem_words(search_words)
@@ -103,8 +103,8 @@ def get_sentences(df1,search_words):
             if missing == 0 and len(sentence) < 1000 and sentence != '':
                 sentence = sentence.capitalize()
                 if sentence[len(sentence)-1] != '.':
-                    sentence = sentence+'.'
-                pub_sentence = pub_sentence+'<br><br>' + sentence
+                    sentence = sentence + '.'
+                pub_sentence = pub_sentence + '<br><br>' + sentence
         if pub_sentence != '':
             sentence = pub_sentence
             sentences_used = sentences_used + 1
@@ -115,7 +115,7 @@ def get_sentences(df1,search_words):
             linka = 'https://doi.org/' + link
             linkb = title
             sentence = '<p fontsize=tiny" align="left">' + sentence + '</p>'
-            final_link = '<p align="left"><a href="{}">{}</a></p>'.format(linka,linkb)
+            final_link = '<p align="left"><a href="{}">{}</a></p>'.format(linka, linkb)
             to_append = [row['publish_time'], authors[0] + ' et al.',
                          final_link, sentence, score]
             df_length = len(df_table)
@@ -124,8 +124,9 @@ def get_sentences(df1,search_words):
     
 ### Main Search ###
 
-terms = input("Enter search term: ")
-search=[[terms]]
+terms = input("Enter search terms, seperate with space: ")
+terms = terms.split()
+search=[terms]
 q = 0
 for search_words in search:
     
@@ -141,7 +142,7 @@ for search_words in search:
     length = df_table.shape[0]
     df_table = df_table.drop(['rel_score'], axis=1)
     # Convert dataframe to HTML
-    df_table = HTML(df_table.to_html(escape=False, index=False))
+    df_table = HTML(df_table.to_html(escape = False, index = False))
     
     # Open table in browser
     if length < 1:
@@ -152,5 +153,5 @@ for search_words in search:
             file.write(df_table.data)
         url = 'file:///C:/Users/Karl/Documents/archive/df_table.html'
         webbrowser.open(url, new = 2)
-    q = q+1
+    q = q + 1
 print ('Done')
